@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using System.Globalization;
 using System.Windows.Forms;
 
 namespace Lab10_DisconnectedData
@@ -16,36 +17,27 @@ namespace Lab10_DisconnectedData
             // Lấy DataSet chứa các bảng
             DataSet ds = GetStudentDataset();
 
-            // --- 3. THIẾT LẬP DATARELATION KHOA - SINHVIEN ---
-            try
-            {
-                DataRelation relation = new DataTableRelationTest().CreateRelation(ds);
+            // --- 4. LỌC VÀ SẮP XẾP BẰNG DATAVIEW ---
+            // Tạo DataView từ bảng SinhVien
+            DataView view = new DataView(ds.Tables["SinhVien"]);
 
-                // Lấy dòng khoa đầu tiên (Ví dụ: Khoa CNTT)
-                DataRow khoa = ds.Tables["Khoa"].Rows[0];
+            // Giả lập lọc theo mã khoa "CNTT" và điểm TB tối thiểu >= 8.0
+            string maKhoa = "CNTT".Replace("'", "''");
+            double minDiem = 8.0;
 
-                // Lấy danh sách các dòng sinh viên con thuộc khoa này thông qua mối quan hệ
-                DataRow[] sinhVienList = khoa.GetChildRows("FK_Khoa_SinhVien");
+            // Thiết lập biểu thức lọc (RowFilter) và sắp xếp (Sort)
+            view.RowFilter = string.Format("MaKhoa = '{0}' AND DiemTB >= {1}",
+                                           maKhoa,
+                                           minDiem.ToString(CultureInfo.InvariantCulture));
 
-                string message = $"Danh sách sinh viên thuộc khoa '{khoa["TenKhoa"]}':\n";
-                foreach (DataRow row in sinhVienList)
-                {
-                    message += $"- {row["HoTen"]} (Mã SV: {row["MaSV"]})\n";
-                }
+            view.Sort = "DiemTB DESC, HoTen ASC";
 
-                MessageBox.Show(message, "Kết quả DataRelation Bài 3", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Lỗi tạo quan hệ: " + ex.Message);
-            }
-
-            // Gán dữ liệu bảng SinhVien lên DataGridView để hiển thị giao diện
-            dataGridView1.DataSource = ds.Tables["SinhVien"];
+            // Gán DataView làm nguồn dữ liệu cho DataGridView để hiển thị
+            dataGridView1.DataSource = view;
             dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
         }
 
-        // Hàm tạo DataSet gồm Khoa và SinhVien (Đã bổ sung cột MaKhoa cho bảng SinhVien để khớp quan hệ)
+        // Hàm tạo DataSet gồm Khoa và SinhVien
         private DataSet GetStudentDataset()
         {
             DataSet ds = new DataSet("QLSinhVien");
@@ -59,13 +51,13 @@ namespace Lab10_DisconnectedData
             dtKhoa.Rows.Add("VT", "Điện tử Viễn thông");
             dtKhoa.Rows.Add("QT", "Quản trị Kinh doanh");
 
-            // --- Bảng 2: SinhVien (Có thêm cột MaKhoa để liên kết) ---
+            // --- Bảng 2: SinhVien ---
             DataTable dtSinhVien = new DataTable("SinhVien");
             dtSinhVien.Columns.Add("MaSV", typeof(string));
             dtSinhVien.Columns.Add("HoTen", typeof(string));
             dtSinhVien.Columns.Add("NgaySinh", typeof(string));
             dtSinhVien.Columns.Add("GioiTinh", typeof(string));
-            dtSinhVien.Columns.Add("MaKhoa", typeof(string)); // Khóa ngoại liên kết với bảng Khoa
+            dtSinhVien.Columns.Add("MaKhoa", typeof(string));
             dtSinhVien.Columns.Add("DiemTB", typeof(double));
             dtSinhVien.Columns.Add("Email", typeof(string));
 
@@ -78,21 +70,6 @@ namespace Lab10_DisconnectedData
             ds.Tables.Add(dtSinhVien);
 
             return ds;
-        }
-    }
-
-    // Helper class để cấu hình quan hệ theo mẫu bài lab
-    public class DataTableRelationTest
-    {
-        public DataRelation CreateRelation(DataSet ds)
-        {
-            DataRelation relation = new DataRelation(
-                "FK_Khoa_SinhVien",
-                ds.Tables["Khoa"].Columns["MaKhoa"],
-                ds.Tables["SinhVien"].Columns["MaKhoa"]);
-
-            ds.Relations.Add(relation);
-            return relation;
         }
     }
 }
