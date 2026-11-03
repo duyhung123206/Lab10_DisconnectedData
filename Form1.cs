@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Data;
+using System.IO;
 using System.Windows.Forms;
 
 namespace Lab10_DisconnectedData
 {
     public partial class Form1 : Form
     {
+        private DataSet _ds;
         private DataTable _table;
+        private string _xmlFilePath = "DataSinhVien.xml";
+        private string _schemaFilePath = "DataSinhVien.xsd";
 
         public Form1()
         {
@@ -15,76 +19,80 @@ namespace Lab10_DisconnectedData
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            LoadDataAndTrackRowState();
+            // Khởi tạo dữ liệu mẫu ban đầu
+            InitData();
         }
 
-        // 7. Hàm nạp dữ liệu và theo dõi RowState
-        private void LoadDataAndTrackRowState()
+        private void InitData()
         {
+            _ds = new DataSet("QLSV_DataSet");
             _table = new DataTable("SinhVien");
 
-            // Định nghĩa các cột
             _table.Columns.Add("MaSV", typeof(string));
             _table.Columns.Add("HoTen", typeof(string));
             _table.Columns.Add("DiemTB", typeof(double));
 
             _table.PrimaryKey = new DataColumn[] { _table.Columns["MaSV"] };
 
-            // Thêm dữ liệu ban đầu
             _table.Rows.Add("24001296", "Nguyễn Duy Hưng", 8.5);
             _table.Rows.Add("24001297", "Nguyễn Văn Hiếu", 8.0);
-            _table.AcceptChanges(); // Đưa trạng thái về Unchanged
+            _table.Rows.Add("24001298", "Trần Văn An", 7.5);
 
-            // Mô phỏng các trạng thái thay đổi
-            _table.Rows.Add("24001298", "Trần Văn An", 7.5);         // Added
-            _table.Rows[0]["HoTen"] = "Nguyễn Duy Hưng (Đã sửa)";  // Modified
-            _table.Rows[1].Delete();                               // Deleted
+            _ds.Tables.Add(_table);
 
-            // Hiển thị lên DataGridView
             dataGridView1.DataSource = _table;
             dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-
-            // Gọi hàm kiểm tra trạng thái dòng
-            CheckRowStates(_table);
         }
 
-        // Hàm kiểm tra RowState an toàn bằng cách duyệt qua bảng 'changes'
-        private void CheckRowStates(DataTable table)
+        // 9. Sự kiện nút: Ghi DataSet ra file XML kèm Schema
+        private void btnSaveXml_Click(object sender, EventArgs e)
         {
-            // Lấy danh sách các dòng thực sự có thay đổi
-            DataTable changes = table.GetChanges();
-
-            if (changes != null)
+            try
             {
-                string info = "--- DANH SÁCH CÁC DÒNG THAY ĐỔI (RowState) ---\n\n";
+                // Ghi cấu trúc (Schema) ra file .xsd
+                _ds.WriteXmlSchema(_schemaFilePath);
 
-                // Duyệt qua bảng changes để tránh lỗi truy xuất dòng đã xóa
-                foreach (DataRow row in changes.Rows)
-                {
-                    DataRowState state = row.RowState;
-                    string maSV = "";
-                    string hoTen = "";
+                // Ghi dữ liệu ra file .xml (có kèm theo định dạng Schema nếu muốn, hoặc dùng WriteXml)
+                _ds.WriteXml(_xmlFilePath, XmlWriteMode.WriteSchema);
 
-                    // Nếu dòng bị xóa, lấy dữ liệu từ phiên bản Original
-                    if (state == DataRowState.Deleted)
-                    {
-                        maSV = row["MaSV", DataRowVersion.Original].ToString();
-                        hoTen = row["HoTen", DataRowVersion.Original].ToString();
-                    }
-                    else
-                    {
-                        maSV = row["MaSV"].ToString();
-                        hoTen = row["HoTen"].ToString();
-                    }
-
-                    info += $"- Mã SV: {maSV} | Họ Tên: {hoTen} | Trạng thái: {state}\n";
-                }
-
-                MessageBox.Show(info, "Theo dõi RowState (Bài 7)", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Đã ghi DataSet ra file XML và Schema thành công!\nĐường dẫn lưu: " + Path.GetFullPath(_xmlFilePath),
+                                "Thông báo Lưu XML", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
-            else
+            catch (Exception ex)
             {
-                MessageBox.Show("Không có thay đổi nào được ghi nhận.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Lỗi khi ghi XML: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        // 9. Sự kiện nút: Đọc lại dữ liệu từ file XML mà không cần CSDL
+        private void btnReadXml_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (File.Exists(_xmlFilePath))
+                {
+                    // Tạo một DataSet mới hoàn toàn độc lập
+                    DataSet dsRead = new DataSet("QLSV_Read");
+
+                    // Đọc file XML kèm theo Schema đã lưu trước đó
+                    dsRead.ReadXml(_xmlFilePath, XmlReadMode.ReadSchema);
+
+                    // Gán dữ liệu đọc được lên DataGridView để kiểm chứng
+                    dataGridView1.DataSource = dsRead.Tables["SinhVien"];
+                    dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+
+                    MessageBox.Show("Đọc dữ liệu từ file XML thành công (Không cần kết nối CSDL)!",
+                                    "Thông báo Đọc XML", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    MessageBox.Show("Chưa tìm thấy file XML! Vui lòng bấm nút 'Lưu XML' trước.",
+                                    "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi khi đọc XML: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }

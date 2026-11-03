@@ -31,6 +31,8 @@
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.btnAccept = new System.Windows.Forms.Button();
             this.btnReject = new System.Windows.Forms.Button();
+            this.btnSaveXml = new System.Windows.Forms.Button();
+            this.btnReadXml = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -64,11 +66,33 @@
             this.btnReject.UseVisualStyleBackColor = true;
             this.btnReject.Click += new System.EventHandler(this.Form1_Load);
             // 
+            // btnSaveXml
+            // 
+            this.btnSaveXml.Location = new System.Drawing.Point(98, 395);
+            this.btnSaveXml.Name = "btnSaveXml";
+            this.btnSaveXml.Size = new System.Drawing.Size(75, 23);
+            this.btnSaveXml.TabIndex = 3;
+            this.btnSaveXml.Text = "Lưu XML";
+            this.btnSaveXml.UseVisualStyleBackColor = true;
+            this.btnSaveXml.Click += new System.EventHandler(this.btnSaveXml_Click);
+            // 
+            // btnReadXml
+            // 
+            this.btnReadXml.Location = new System.Drawing.Point(286, 395);
+            this.btnReadXml.Name = "btnReadXml";
+            this.btnReadXml.Size = new System.Drawing.Size(75, 23);
+            this.btnReadXml.TabIndex = 4;
+            this.btnReadXml.Text = "Đọc XML";
+            this.btnReadXml.UseVisualStyleBackColor = true;
+            this.btnReadXml.Click += new System.EventHandler(this.btnReadXml_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.btnReadXml);
+            this.Controls.Add(this.btnSaveXml);
             this.Controls.Add(this.btnReject);
             this.Controls.Add(this.btnAccept);
             this.Controls.Add(this.dataGridView1);
@@ -85,6 +109,8 @@
         private System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.Button btnAccept;
         private System.Windows.Forms.Button btnReject;
+        private System.Windows.Forms.Button btnSaveXml;
+        private System.Windows.Forms.Button btnReadXml;
     }
 }
 

@@ -1,0 +1,22 @@
+<?xml version="1.0" standalone="yes"?>
+<xs:schema id="QLSV_DataSet" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+  <xs:element name="QLSV_DataSet" msdata:IsDataSet="true" msdata:UseCurrentLocale="true">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="SinhVien">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="MaSV" type="xs:string" />
+              <xs:element name="HoTen" type="xs:string" minOccurs="0" />
+              <xs:element name="DiemTB" type="xs:double" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+    <xs:unique name="Constraint1" msdata:PrimaryKey="true">
+      <xs:selector xpath=".//SinhVien" />
+      <xs:field xpath="MaSV" />
+    </xs:unique>
+  </xs:element>
+</xs:schema>
