@@ -6,8 +6,6 @@ namespace Lab10_DisconnectedData
 {
     public partial class Form1 : Form
     {
-        private DataTable _table;
-
         public Form1()
         {
             InitializeComponent();
@@ -15,56 +13,34 @@ namespace Lab10_DisconnectedData
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            LoadData();
+            LoadScoreTable();
         }
 
-        // Hàm nạp dữ liệu chuẩn cho bảng SinhVien
-        private void LoadData()
+        // 6. Hàm tạo DataTable thủ công và thêm cột tính toán XếpLoại
+        private void LoadScoreTable()
         {
-            _table = new DataTable("SinhVien");
+            DataTable dtScore = new DataTable("BangDiem");
 
-            _table.Columns.Add("MaSV", typeof(string));
-            _table.Columns.Add("HoTen", typeof(string));
-            _table.Columns.Add("NgaySinh", typeof(string));
-            _table.Columns.Add("GioiTinh", typeof(string));
-            _table.Columns.Add("MaKhoa", typeof(string));
-            _table.Columns.Add("DiemTB", typeof(double));
-            _table.Columns.Add("Email", typeof(string));
+            // Tạo các cột cơ bản
+            dtScore.Columns.Add("MaSV", typeof(string));
+            dtScore.Columns.Add("HoTen", typeof(string));
+            dtScore.Columns.Add("Diem", typeof(double));
 
-            _table.PrimaryKey = new DataColumn[] { _table.Columns["MaSV"] };
+            // Thêm cột tính toán "Xếp Loại" sử dụng biểu thức (Expression) của DataTable
+            // Nếu điểm >= 8.0: Giỏi, >= 6.5: Khá, >= 5.0: Trung bình, còn lại: Yếu
+            DataColumn colXepLoai = new DataColumn("XếpLoai", typeof(string));
+            colXepLoai.Expression = "IIF(Diem >= 8.0, 'Giỏi', IIF(Diem >= 6.5, 'Khá', IIF(Diem >= 5.0, 'Trung bình', 'Yếu')))";
+            dtScore.Columns.Add(colXepLoai);
 
-            _table.Rows.Add("24001296", "Nguyễn Duy Hưng", "2006-01-01", "Nam", "CNTT", 8.5, "nguyenduyhung@gmail.com");
-            _table.Rows.Add("24001297", "Nguyễn Văn Hiếu", "2006-05-12", "Nam", "CNTT", 8.0, "hieu@gmail.com");
-            _table.Rows.Add("24001298", "Trần Văn An", "2006-03-20", "Nam", "VT", 6.5, "an@gmail.com");
-            _table.Rows.Add("24001299", "Lê Thị Mai", "2006-08-15", "Nữ", "QT", 7.5, "mai@gmail.com");
+            // Thêm dữ liệu mẫu vào bảng
+            dtScore.Rows.Add("24001296", "Nguyễn Duy Hưng", 8.5);
+            dtScore.Rows.Add("24001297", "Nguyễn Văn Hiếu", 7.8);
+            dtScore.Rows.Add("24001298", "Trần Văn An", 4.5);
+            dtScore.Rows.Add("24001299", "Lê Thị Mai", 6.0);
 
-            dataGridView1.DataSource = _table;
+            // Gán nguồn dữ liệu cho DataGridView
+            dataGridView1.DataSource = dtScore;
             dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-        }
-
-        // Sự kiện nút Lưu thay đổi (btnLưu)
-        private void btnLưu_Click(object sender, EventArgs e)
-        {
-            dataGridView1.EndEdit();
-
-            try
-            {
-                DataTable changes = _table.GetChanges();
-                if (changes != null)
-                {
-                    int rows = changes.Rows.Count;
-                    _table.AcceptChanges();
-                    MessageBox.Show("Đã cập nhật " + rows + " thay đổi thành công.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-                else
-                {
-                    MessageBox.Show("Không có thay đổi nào được ghi nhận.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Lỗi cập nhật: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
         }
     }
 }
