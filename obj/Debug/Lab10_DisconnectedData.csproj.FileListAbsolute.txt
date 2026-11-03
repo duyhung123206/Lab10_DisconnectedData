@@ -1,0 +1,11 @@
+C:\nguyenduyhung\Lab10_DisconnectedData\Lab10_DisconnectedData\obj\Debug\Lab10_DisconnectedData.csproj.AssemblyReference.cache
+C:\nguyenduyhung\Lab10_DisconnectedData\Lab10_DisconnectedData\obj\Debug\Lab10_DisconnectedData.Form1.resources
+C:\nguyenduyhung\Lab10_DisconnectedData\Lab10_DisconnectedData\obj\Debug\Lab10_DisconnectedData.Properties.Resources.resources
+C:\nguyenduyhung\Lab10_DisconnectedData\Lab10_DisconnectedData\obj\Debug\Lab10_DisconnectedData.csproj.GenerateResource.cache
+C:\nguyenduyhung\Lab10_DisconnectedData\Lab10_DisconnectedData\obj\Debug\Lab10_DisconnectedData.csproj.CoreCompileInputs.cache
+C:\nguyenduyhung\Lab10_DisconnectedData\Lab10_DisconnectedData\bin\Debug\Lab10_DisconnectedData.exe.config
+C:\nguyenduyhung\Lab10_DisconnectedData\Lab10_DisconnectedData\bin\Debug\Lab10_DisconnectedData.exe
+C:\nguyenduyhung\Lab10_DisconnectedData\Lab10_DisconnectedData\bin\Debug\Lab10_DisconnectedData.pdb
+C:\nguyenduyhung\Lab10_DisconnectedData\Lab10_DisconnectedData\obj\Debug\Lab10_DisconnectedData.exe
+C:\nguyenduyhung\Lab10_DisconnectedData\Lab10_DisconnectedData\obj\Debug\Lab10_DisconnectedData.pdb
+C:\nguyenduyhung\Lab10_DisconnectedData\Lab10_DisconnectedData\obj\Debug\Lab10_DisconnectedData.exe.config
